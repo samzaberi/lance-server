@@ -18,9 +18,6 @@ class Vehicle(db.Model):
     lat = db.Column(db.Float)
     longt = db.Column(db.Float())
 
-    def __repr__(self):
-        return '<Vehicle %r>' % self.drivername
-
 
 @app.route('/dispatch/vehicle/destination=<lat>,<longt>', methods=['GET'])
 def get_vehicle(lat, longt):
@@ -34,4 +31,5 @@ def get_vehicle(lat, longt):
 
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True)
