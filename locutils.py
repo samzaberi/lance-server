@@ -21,11 +21,3 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * math.asin(math.sqrt(a))
     # result in kilometres
     return rad * c
-
-
-def haversine_on_dict(lat, longt, loc_list):
-    results = []
-    for item in loc_list:
-        val = haversine(lat, longt, item['lat'], item['long'])
-        results.append(val)
-    return results
