@@ -1,34 +1,35 @@
-import locutils
 
+from locutils import haversine
 from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
-locations = [
-    {
-        'id': 1,
-        'lat': -1.2865850785072128,
-        'long': 36.88099622726441
-    },
-    {
-        'id': 2,
-        'lat': -1.2885479597710903,
-        'long': 36.88336193561555
-    },
-    {
-        'id': 3,
-        'lat': -1.2885211444634657,
-        'long': 36.87934935092927
-    }
-]
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vehicles.sqlite3'
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
-@app.route('/vehicles/origin=<src_lat>,<src_long>', methods=['GET'])
-def get_vehicle(src_lat, src_long):
-    results = locutils.haversine_on_dict(
-        float(src_lat), float(src_long), locations)
+class Vehicle(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    drivername = db.Column(db.String())
+    plateno = db.Column(db.String())
+    lat = db.Column(db.Float)
+    longt = db.Column(db.Float())
+
+
+@app.route('/dispatch/vehicle/destination=<lat>,<longt>', methods=['GET'])
+def get_vehicle(lat, longt):
+    locations = Vehicle.query.with_entities(
+        Vehicle.id, Vehicle.lat, Vehicle.longt).all()
+    results = []
+    for item in locations:
+        val = haversine(float(lat), float(longt), item[1], item[2])
+        results.append(val)
     return jsonify(results)
 
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True)

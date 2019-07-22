@@ -10,6 +10,7 @@ googlemaps = "*"
 Flask = "*"
 SQLAlchemy = "*"
 Flask-SQLAlchemy = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.7"
