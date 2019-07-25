@@ -13,15 +13,15 @@ def get_dist_matrix(lat, longt, locs):
     distmatrix_result = gmaps.distance_matrix(
         origins=origins, destinations=(lat, longt))
 
-    req_details = []
+    desired_fields = []
     for item in distmatrix_result['rows']:
         for x in item['elements']:
-            req_details.append((x['distance']['text'],
-                                x['distance']['value'],
-                                x['duration']['text'],
-                                x['duration']['value']))
+            desired_fields.append((x['distance']['text'],
+                                   x['distance']['value'],
+                                   x['duration']['text'],
+                                   x['duration']['value']))
 
-    merged = [{'id': i, 'details': a} for i, a in zip(ids, req_details)]
+    merged = [{'id': i, 'details': a} for i, a in zip(ids, desired_fields)]
     shortest = min(merged, key=lambda x: x['details'][1])
 
     return shortest
