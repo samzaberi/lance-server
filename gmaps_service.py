@@ -5,7 +5,7 @@ from operator import itemgetter
 
 
 def get_dist_matrix(lat, longt, locs):
-    gmaps = googlemaps.Client(key='AIzaSyCSMn6DIKRxyKHzfO-mhjnqU6u6ZHkUbgE')
+    gmaps = googlemaps.Client(key='API_KEY')
 
     ids = [x[0] for x in locs]
     origins = [(x[1], x[2]) for x in locs]
