@@ -28,14 +28,19 @@ def get_vehicle(lat, longt):
     distances = []
     for item in vehicle_locs:
         val = haversine(float(lat), float(longt), item[1], item[2])
-        distances.append({'id': item[0], 'distance': val})
+        distances.append((item[0], val))
 
-    srtd_by_dist = sorted(distances, key=itemgetter('distance'))
-    ids_for_closest_five = [x['id'] for x in srtd_by_dist[:6]]
+    srtd_by_dist = sorted(distances, key=itemgetter(1))
+    ids_for_closest_five = [x[0] for x in srtd_by_dist[:6]]
     locs_for_req = [x for x in vehicle_locs if x[0] in ids_for_closest_five]
-    result = get_dist_matrix(lat, longt, locs_for_req)
-
-    return jsonify(result)
+    dist_matrix_result = get_dist_matrix(lat, longt, locs_for_req)
+    query_with_result = Vehicle.query.with_entities(
+        Vehicle.drivername, Vehicle.plateno).filter_by(id=dist_matrix_result['id']).all()
+    vehicle_details = {'drivername': query_with_result[0][0],
+                       'plateno': query_with_result[0][1],
+                       'distance': dist_matrix_result['details'][0],
+                       'ETA': dist_matrix_result['details'][2]}
+    return jsonify(vehicle_details)
 
 
 if __name__ == '__main__':
