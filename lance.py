@@ -2,8 +2,7 @@ from operator import itemgetter
 from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from geodist import haversine
-from gmaps_service import get_dist_matrix
+from geodist import haversine, get_dist_matrix
 
 app = Flask(__name__)
 
