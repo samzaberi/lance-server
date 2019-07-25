@@ -1,6 +1,7 @@
 
 import googlemaps
 import json
+from operator import itemgetter
 
 
 def get_dist_matrix(lat, longt, locs):
@@ -15,14 +16,15 @@ def get_dist_matrix(lat, longt, locs):
     req_details = []
     for item in distmatrix_result['rows']:
         for x in item['elements']:
-            req_details.append(
-                {'dist_text': x['distance']['text'],
-                 'distance': x['distance']['value'],
-                 'duration': x['duration']['text']})
+            req_details.append((x['distance']['text'],
+                                x['distance']['value'],
+                                x['duration']['text'],
+                                x['duration']['value']))
 
-    results = [{'id': i, 'details': a} for i, a in zip(ids, req_details)]
+    merged = [{'id': i, 'details': a} for i, a in zip(ids, req_details)]
+    shortest = min(merged, key=lambda x: x['details'][1])
 
-    return results
+    return shortest
 
 
 """locdata = [
