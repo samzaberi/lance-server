@@ -1,8 +1,9 @@
-
-from locutils import haversine
+from operator import itemgetter
 from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from geodist import haversine
+from gmaps_service import get_dist_matrix
 
 app = Flask(__name__)
 
@@ -17,19 +18,30 @@ class Vehicle(db.Model):
     plateno = db.Column(db.String())
     lat = db.Column(db.Float)
     longt = db.Column(db.Float())
+    isactive = db.Column(db.Boolean())
 
 
-@app.route('/dispatch/vehicle/destination=<lat>,<longt>', methods=['GET'])
+@app.route('/dispatch/destination=<lat>,<longt>', methods=['GET'])
 def get_vehicle(lat, longt):
-    locations = Vehicle.query.with_entities(
-        Vehicle.id, Vehicle.lat, Vehicle.longt).all()
-    results = []
-    for item in locations:
+    vehicle_locs = Vehicle.query.with_entities(
+        Vehicle.id, Vehicle.lat, Vehicle.longt).filter_by(isactive=True)
+    distances = []
+    for item in vehicle_locs:
         val = haversine(float(lat), float(longt), item[1], item[2])
-        results.append(val)
-    return jsonify(results)
+        distances.append((item[0], val))
+
+    srtd_by_dist = sorted(distances, key=itemgetter(1))
+    ids_for_closest_five = [x[0] for x in srtd_by_dist[:6]]
+    locs_for_req = [x for x in vehicle_locs if x[0] in ids_for_closest_five]
+    dist_matrix_result = get_dist_matrix(lat, longt, locs_for_req)
+    query_with_result = Vehicle.query.with_entities(
+        Vehicle.drivername, Vehicle.plateno).filter_by(id=dist_matrix_result['id']).all()
+    vehicle_details = {'drivername': query_with_result[0][0],
+                       'plateno': query_with_result[0][1],
+                       'distance': dist_matrix_result['details'][0],
+                       'ETA': dist_matrix_result['details'][2]}
+    return jsonify(vehicle_details)
 
 
 if __name__ == '__main__':
-    db.create_all()
     app.run(debug=True)
