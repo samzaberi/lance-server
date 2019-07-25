@@ -3,8 +3,8 @@ import googlemaps
 import json
 
 
-def req_dist_matrix(lat, longt, locs):
-    gmaps = googlemaps.Client(key='API_KEY')
+def get_dist_matrix(lat, longt, locs):
+    gmaps = googlemaps.Client(key='AIzaSyCSMn6DIKRxyKHzfO-mhjnqU6u6ZHkUbgE')
 
     ids = [x[0] for x in locs]
     origins = [(x[1], x[2]) for x in locs]
@@ -19,9 +19,8 @@ def req_dist_matrix(lat, longt, locs):
                 {'dist_text': x['distance']['text'],
                  'distance': x['distance']['value'],
                  'duration': x['duration']['text']})
-    results = []
-    for i, a in zip(ids, req_details):
-        results.append({'id': i, 'details': a})
+
+    results = [{'id': i, 'details': a} for i, a in zip(ids, req_details)]
 
     return results
 
@@ -33,4 +32,4 @@ def req_dist_matrix(lat, longt, locs):
     (4, -1.1003032475060555, 37.019698619842536)
 ]
 
-print(req_dist_matrix(1.0985132000000002, 37.0108526, locdata))"""
+print(get_dist_matrix(1.0985132000000002, 37.0108526, locdata))"""
