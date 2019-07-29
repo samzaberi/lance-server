@@ -39,6 +39,7 @@ def get_vehicle(lat, longt):
                        'plateno': query_with_result[0][1],
                        'distance': dist_matrix_result['details'][0],
                        'ETA': dist_matrix_result['details'][2]}
+    print(vehicle_details)
     return jsonify(vehicle_details)
 
 

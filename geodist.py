@@ -44,6 +44,6 @@ def get_dist_matrix(lat, longt, locs):
                                    x['duration']['value']))
 
     merged = [{'id': i, 'details': a} for i, a in zip(ids, desired_fields)]
-    shortest = min(merged, key=lambda x: x['details'][1])
+    shortest = min(merged, key=lambda x: x['details'][1] and x['details'][3])
 
     return shortest
