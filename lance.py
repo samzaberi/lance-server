@@ -2,8 +2,7 @@ from operator import itemgetter
 from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from geodist import haversine
-from gmaps_service import get_dist_matrix
+from geodist import haversine, get_dist_matrix
 
 app = Flask(__name__)
 
@@ -25,6 +24,7 @@ class Vehicle(db.Model):
 def get_vehicle(lat, longt):
     vehicle_locs = Vehicle.query.with_entities(
         Vehicle.id, Vehicle.lat, Vehicle.longt).filter_by(isactive=True)
+
     distances = []
     for item in vehicle_locs:
         val = haversine(float(lat), float(longt), item[1], item[2])
@@ -40,6 +40,7 @@ def get_vehicle(lat, longt):
                        'plateno': query_with_result[0][1],
                        'distance': dist_matrix_result['details'][0],
                        'ETA': dist_matrix_result['details'][2]}
+    print(vehicle_details)
     return jsonify(vehicle_details)
 
 
