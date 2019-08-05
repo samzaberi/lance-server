@@ -24,6 +24,7 @@ class Vehicle(db.Model):
 def get_vehicle(lat, longt):
     vehicle_locs = Vehicle.query.with_entities(
         Vehicle.id, Vehicle.lat, Vehicle.longt).filter_by(isactive=True)
+
     distances = []
     for item in vehicle_locs:
         val = haversine(float(lat), float(longt), item[1], item[2])
