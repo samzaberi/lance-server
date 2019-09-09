@@ -20,7 +20,7 @@ class Vehicle(db.Model):
     isactive = db.Column(db.Boolean())
 
 
-@app.route('/dispatch/destination=<lat>,<longt>', methods=['GET'])
+@app.route('/dispatch?destination=<lat>,<longt>', methods=['GET'])
 def get_vehicle(lat, longt):
     vehicle_locs = Vehicle.query.with_entities(
         Vehicle.id, Vehicle.lat, Vehicle.longt).filter_by(isactive=True)
